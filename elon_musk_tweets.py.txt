@@ -1,0 +1,63 @@
+import smtplib
+import tweepy
+import re
+import time
+
+global last_tweet_doge
+last_tweet_doge = ""
+def buy(current_tweet):
+   global last_tweet_doge
+   print(current_tweet)
+   if current_tweet == last_tweet_doge:
+       print("already sent")
+       return
+   last_tweet_doge = current_tweet
+   s = smtplib.SMTP('smtp.gmail.com', 587)
+   s.starttls()
+
+   try:
+      s.login("abhinav.vashisht.home@gmail.com", "pass_here")
+   except:
+       print("something is wrong")
+       return
+
+   message = "Aleer!!!!!! ELon musk just tweeted "
+   s.sendmail("abhinav.vashisht.home@gmail.com", "27abhinav10@gmail.com", message)
+   s.quit()
+
+auth = tweepy.OAuthHandler("dOzTtFuf0bHmagMQ6VT34D5wW",
+    "XKpEYm6bFb0Nqp3RN9yiKk76q12DjOdgyAV0EXj9omegI2Nx8a")
+auth.set_access_token("1394647114236399625-ILUGSfBZBN4KphA9Kyx4dNOkeFQgkR",
+    "LgU2s2ZKyBerFhqkp52BIyFxXqLh6idXIBK6eiTpXPtRq")
+
+api = tweepy.API(auth)
+
+try:
+    api.verify_credentials()
+    print("Authentication OK")
+except:
+    print("Error during authentication")
+
+while(True):
+    print("app start")
+    user = api.get_user("elonmusk")
+
+    print("User details:")
+    print(user.name)
+    tweets = api.user_timeline(screen_name="@elonmusk", count = 5, include_rts = False, exclude_replies= True)
+    tweets_for_csv = [tweet.text for tweet in tweets]
+    print("appp start")
+    possible_hints = ["doge", "coin", "bitcoin", "bit", "moon", "hold", "hodl", "money", "rise"]
+    for current_tweet in tweets_for_csv:
+        current_tweet = current_tweet.lower()
+        for hints in possible_hints:
+            if re.search(hints, current_tweet):
+               buy(current_tweet)
+               break
+
+    time.sleep(300)
+
+
+
+
+
